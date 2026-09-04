@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartilha LF-PRO — Como o sistema pensa, passo a passo</title>
+<style>
+    :root {
+        --bg: #0b0e14;
+        --bg-panel: #12161f;
+        --bg-code: #060810;
+        --ink: #e7ecf3;
+        --ink-dim: #8b96a8;
+        --line: #232a38;
+        --blue: #4d8dff;
+        --green: #22c58b;
+        --orange: #e8a23a;
+        --red: #ef5a5a;
+        --purple: #b088f5;
+        --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+        --mono: 'Fira Code', Consolas, monospace;
+    }
+    [data-theme="light"] {
+        --bg: #f6f4ee;
+        --bg-panel: #ffffff;
+        --bg-code: #eef0f4;
+        --ink: #1b1f27;
+        --ink-dim: #5b6472;
+        --line: #dcdfe6;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.65;
+        transition: background .3s, color .3s;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 3rem 1.6rem 6rem; }
+
+    .top {
+        position: sticky; top: 0; z-index: 50;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 1rem 1.6rem; background: var(--bg); border-bottom: 1px solid var(--line);
+    }
+    .top strong { font-family: var(--serif); font-size: 1.05rem; }
+    .top button {
+        background: var(--bg-panel); color: var(--ink); border: 1px solid var(--line);
+        padding: 8px 16px; border-radius: 999px; cursor: pointer; font-size: .8rem; font-weight: 600;
+    }
+
+    h1 { font-family: var(--serif); font-size: 2.3rem; line-height: 1.15; margin: 0 0 .6rem; }
+    .subtitle { color: var(--ink-dim); font-size: 1.05rem; max-width: 60ch; margin-bottom: 2.6rem; }
+
+    .flow {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+        gap: 10px; margin: 2.4rem 0 3.2rem;
+    }
+    .flow div {
+        background: var(--bg-panel); border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px 10px; text-align: center; font-size: .78rem; font-weight: 700;
+        color: var(--ink-dim); position: relative;
+    }
+    .flow div b { display:block; color: var(--ink); font-size: .95rem; margin-bottom: 4px; }
+
+    section.step { margin-bottom: 3.4rem; }
+    .step-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 1rem; }
+    .step-letter {
+        font-family: var(--serif); font-size: 2.1rem; color: var(--blue); line-height: 1;
+        min-width: 46px;
+    }
+    .step-h h2 { font-size: 1.3rem; margin: 0; }
+    .step-h span.tag {
+        font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+        color: var(--ink-dim); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px;
+    }
+
+    .step p { margin: 0 0 1rem; }
+    .step ul { margin: 0 0 1rem; padding-left: 1.3rem; }
+    .step li { margin-bottom: .5rem; }
+
+    code, .kbd {
+        font-family: var(--mono); background: var(--bg-code); border: 1px solid var(--line);
+        padding: 2px 7px; border-radius: 6px; font-size: .85em;
+    }
+
+    .box {
+        border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1.2rem 0; border: 1px solid var(--line);
+        background: var(--bg-panel);
+    }
+    .box.warn { border-left: 4px solid var(--orange); }
+    .box.danger { border-left: 4px solid var(--red); }
+    .box.ok { border-left: 4px solid var(--green); }
+    .box p:last-child { margin-bottom: 0; }
+    .box .lbl { font-weight: 800; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; display:block; }
+    .box.warn .lbl { color: var(--orange); }
+    .box.danger .lbl { color: var(--red); }
+    .box.ok .lbl { color: var(--green); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .9rem; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--ink-dim); font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; }
+
+    .checklist { list-style: none; padding: 0; margin: 1.2rem 0; }
+    .checklist li {
+        display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line);
+    }
+    .checklist li:before { content: "□"; color: var(--blue); font-size: 1.2rem; line-height: 1; }
+
+    .divider { height: 1px; background: var(--line); margin: 3.2rem 0; }
+
+    footer { color: var(--ink-dim); font-size: .8rem; text-align: center; padding-top: 2rem; }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="top">
+    <strong>Cartilha LF-PRO — o ciclo completo</strong>
+    <button onclick="toggleTheme()" id="theme-btn">Modo claro</button>
+</div>
+
+<div class="wrap">
+
+    <h1>Como o LF-PRO pensa, do primeiro concurso ao boletim de auditoria</h1>
+    <p class="subtitle">Esta cartilha explica exatamente o que o sistema faz em cada clique — para que você sempre saiba se está olhando um <em>prognóstico provisório</em> ou uma <em>aposta oficialmente registrada</em>, e nunca perca a conferência de um concurso por engano.</p>
+
+    <div class="flow">
+        <div><b>A</b>Colar histórico</div>
+        <div><b>B</b>Processar</div>
+        <div><b>C</b>Ver matriz</div>
+        <div><b>D</b>Ver prognóstico (preview)</div>
+        <div><b>E</b>Registrar jogos</div>
+        <div><b>F</b>Apostar de verdade</div>
+        <div><b>G</b>Colar resultado</div>
+        <div><b>H</b>Auditoria automática</div>
+    </div>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">A</span><h2>Entrada — colar os concursos</h2><span class="tag">aba Entrada</span></div>
+        <p>Você cola o histórico na caixa de texto. O sistema aceita dois formatos, e reconhece os dois na mesma colagem:</p>
+        <ul>
+            <li><b>Tabular (o que você normalmente usa):</b> <code>3753&nbsp;&nbsp;04/08/2026&nbsp;&nbsp;1&nbsp;2&nbsp;4&nbsp;6&nbsp;8...</code> — ID, data, 15 dezenas, separados por tab, espaço ou vírgula.</li>
+            <li><b>Formato legado:</b> <code>Concurso 3753 (04/08/2026) 01 02 04...</code></li>
+        </ul>
+        <div class="box ok">
+            <span class="lbl">Quantos concursos colar de início?</span>
+            <p>O motor funciona com 1 concurso só, mas fica mais fraco (sem âncora nem núcleo). Com <b>2</b> ele já calcula a âncora. Com <b>3 ou mais</b> ele calcula tudo: âncora + núcleo de ciclo + ranking de força completo. Recomendado começar sempre com pelo menos 3.</p>
+        </div>
+    </section>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">B</span><h2>Processar — o que acontece ao clicar</h2><span class="tag">botão "Processar Lote Completo"</span></div>
+        <p>Ao clicar, o sistema, em ordem:</p>
+        <ul>
+            <li>Lê o texto e extrai todos os concursos reconhecíveis (pode colar vários de uma vez, ele processa o lote inteiro).</li>
+            <li>Ignora qualquer concurso cujo ID já esteja salvo (não duplica).</li>
+            <li><b>Antes de gravar cada concurso novo</b>, verifica se existe um <i>pleito</i> (jogos registrados) esperando exatamente aquele ID. Se existir, roda a auditoria automaticamente — <a href="#passo-h">veja o passo H</a>.</li>
+            <li>Grava os concursos novos no histórico, reordena do mais recente para o mais antigo.</li>
+            <li><b>Recalcula tudo</b>: estatísticas, matriz de recorrências e os 40 jogos de prognóstico — do zero, com base no histórico atualizado.</li>
+        </ul>
+        <div class="box warn">
+            <span class="lbl">Ponto de atenção</span>
+            <p>Esse último item é o mais importante da cartilha: <b>toda vez que você processa um novo concurso, os prognósticos mostrados na aba Jogos mudam</b>, mesmo que você não tenha pedido. Isso é intencional — o motor está recalibrando com o dado mais fresco — mas significa que o jogo que você estava olhando antes de colar um novo resultado <u>não existe mais na tela</u> a menos que você já o tenha registrado (passo E).</p>
+        </div>
+    </section>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">C</span><h2>Matriz de recorrências</h2><span class="tag">aba Análise</span></div>
+        <p>Aqui o sistema mostra, de forma transparente, a base estatística que ele está usando naquele exato momento:</p>
+        <table>
+            <tr><th>Indicador</th><th>O que significa</th><th>Requer</th></tr>
+            <tr><td>Âncora</td><td>Dezenas que se repetiram entre os 2 últimos concursos</td><td>2+ concursos</td></tr>
+            <tr><td>Núcleo de ciclo</td><td>Dezenas presentes nos 3 últimos concursos seguidos</td><td>3+ concursos</td></tr>
+            <tr><td>Ranking de força</td><td>Score de cada dezena (frequência ponderada + bônus de tríade mágica + bônus de âncora/núcleo)</td><td>1+ concurso</td></tr>
+        </table>
+        <p>Se a âncora ou o núcleo aparecerem vazios ("insuficiente"), é porque ainda não há concursos suficientes — não é erro.</p>
+    </section>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">D</span><h2>Prognóstico — isto ainda é só uma prévia</h2><span class="tag">aba Jogos</span></div>
+        <p>Os 40 jogos (1 premium + 3 excelente + 9 bom custo + 27 razoável) que aparecem aqui são gerados <b>automaticamente, toda vez</b> que a tela é redesenhada — inclusive só de trocar de aba ou tema. Eles usam:</p>
+        <ul>
+            <li>Um núcleo fixo (âncora, ou núcleo de ciclo, dependendo do grupo) que não muda dentro daquele cálculo;</li>
+            <li>O restante das dezenas escolhido pelo ranking de força, respeitando a janela de pares/ímpares (7‑8) e de tríades mágicas (3‑5), relaxando essas regras automaticamente se não achar jogos suficientes — nunca trava, nunca fica vazio.</li>
+        </ul>
+        <div class="box danger">
+            <span class="lbl">Isto NÃO é uma aposta registrada</span>
+            <p>Enquanto você não clicar em <b>"Registrar Jogos para Conferência Automática"</b>, esses 40 jogos são só uma prévia de trabalho. Se você colar um novo concurso agora, eles são recalculados e os antigos somem da tela — sem aviso, sem histórico dos que "quase escolheu".</p>
+        </div>
+    </section>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">E</span><h2>Registrar — agora sim, isto trava a aposta</h2><span class="tag">botão "Registrar Jogos"</span></div>
+        <p>Ao clicar, o sistema:</p>
+        <ul>
+            <li>Tira uma "fotografia" exata dos 40 jogos que estavam na tela naquele instante;</li>
+            <li>Define o <b>concurso-alvo</b> automaticamente como <code>último concurso do histórico + 1</code> — ou seja, sempre o próximo concurso a sair;</li>
+            <li>Salva essa fotografia como o <i>pleito</i> ativo, e mostra o alvo no card "Próximo Alvo" no topo do painel.</li>
+        </ul>
+        <div class="box warn">
+            <span class="lbl">Registrar de novo sobrescreve o anterior</span>
+            <p>Se você clicar em "Registrar" mais de uma vez para o mesmo concurso-alvo (por exemplo, colou mais um resultado antigo no meio do caminho e recalculou), <b>o pleito anterior é substituído sem aviso</b> pelo novo. Só existe um pleito ativo por vez.</p>
+        </div>
+        <p>Depois de registrar, confira sempre o card <b>"Próximo Alvo"</b> no topo — ele é a única fonte de verdade sobre qual concurso está com aposta travada agora.</p>
+    </section>
+
+    <section class="step">
+        <div class="step-h"><span class="step-letter">F</span><h2>Aposte de verdade, fora do app</h2><span class="tag">ação manual sua</span></div>
+        <p>O sistema não faz a aposta pela Loteria Caixa — ele só organiza e depois confere. Depois de registrar, jogue os 40 jogos (ou os que você escolher) normalmente, do jeito que sempre faz.</p>
+    </section>
+
+    <section class="step" id="passo-g">
+        <div class="step-h"><span class="step-letter">G</span><h2>Cole o resultado do concurso-alvo</h2><span class="tag">aba Entrada, de novo</span></div>
+        <p>Quando o resultado oficial sair, cole-o na aba Entrada e clique em Processar, do mesmo jeito do passo B.</p>
+        <div class="box ok">
+            <span class="lbl">É aqui que a mágica da conferência acontece</span>
+            <p>O sistema compara o <b>ID do concurso que você acabou de colar</b> com o <b>ID do concurso-alvo do pleito ativo</b>. Se baterem, a auditoria roda sozinha, automaticamente, antes mesmo de terminar de processar o histórico — <a href="#passo-h">veja o passo H</a>.</p>
+        </div>
+    </section>
+
+    <section class="step" id="passo-h">
+        <div class="step-h"><span class="step-letter">H</span><h2>Auditoria automática — a conferência real</h2><span class="tag">aba Auditoria</span></div>
+        <p>Quando o ID bate, o sistema, para os 40 jogos exatos que foram fotografados no passo E (não os que estão na tela agora):</p>
+        <ul>
+            <li>Conta quantas dezenas de cada jogo saíram no resultado (11 a 15 pontos);</li>
+            <li>Aplica a tabela de prêmios de referência (11, 12, 13, 14 e 15 pontos);</li>
+            <li>Soma o investimento (R$ 3,50 × 40 jogos = R$ 140,00) e o retorno total;</li>
+            <li>Atualiza o saldo financeiro acumulado, mostrado no topo da tela;</li>
+            <li>Gera um boletim completo na aba Auditoria, jogo por jogo, agrupado por estratégia (premium, excelente, bom, razoável);</li>
+            <li>Fecha o pleito (ele volta a ficar vazio) e já recalcula um novo prognóstico-prévia para o próximo concurso — que, de novo, só vira aposta oficial se você repetir o passo E.</li>
+        </ul>
+        <div class="box danger">
+            <span class="lbl">O que acontece se você NÃO segue essa ordem</span>
+            <p>Se você pular o passo E (nunca clicou em Registrar) e colar o resultado do concurso seguinte, o sistema grava o resultado no histórico normalmente e recalcula um novo prognóstico — mas <b>nenhuma auditoria roda, nenhum boletim é gerado, e nada é descontado ou creditado no saldo</b>, porque não havia pleito algum esperando aquele ID. Não há erro nem aviso — o app simplesmente segue em frente como se você nunca tivesse jogado.</p>
+        </div>
+        <div class="box warn">
+            <span class="lbl">Pleito "órfão"</span>
+            <p>Se você registrar um pleito para o concurso N+1, mas colar direto o resultado do concurso N+2 (pulou um), o ID não bate — a auditoria não roda para nenhum dos dois, e o pleito antigo fica esquecido, sem nunca ser conferido nem removido sozinho. Vale a pena, de tempos em tempos, checar o card "Próximo Alvo": se ele mostrar um número muito atrasado em relação ao concurso mais recente colado, o pleito está órfão.</p>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="step">
+        <div class="step-h"><h2 style="font-size:1.15rem">Checklist rápido para não se confundir</h2></div>
+        <ul class="checklist">
+            <li>Antes de colar um resultado novo, veja o card "Próximo Alvo" — ele diz para qual concurso existe (ou não) uma aposta travada.</li>
+            <li>Os jogos da aba "Jogos" só são reais depois que você clica em "Registrar" — até lá, é rascunho e muda sozinho.</li>
+            <li>Nunca clique em "Registrar" duas vezes para o mesmo alvo, a menos que queira mesmo substituir a aposta anterior.</li>
+            <li>Cole os resultados na ordem certa dos concursos, sem pular nenhum, para a auditoria nunca ficar órfã.</li>
+            <li>O boletim de auditoria na aba Auditoria é o único lugar que mostra a conferência real, jogo a jogo, do que foi de fato registrado.</li>
+        </ul>
+    </section>
+
+    <footer>Cartilha do sistema LF-PRO — uso pessoal.</footer>
+</div>
+
+<script>
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('theme-btn');
+    if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        btn.textContent = 'Modo escuro';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.textContent = 'Modo claro';
+    }
+}
+</script>
+</body>
+</html>
