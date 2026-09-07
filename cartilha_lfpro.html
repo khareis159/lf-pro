@@ -117,7 +117,10 @@
 
 <div class="top">
     <strong>Cartilha LF-PRO — o ciclo completo</strong>
-    <button onclick="toggleTheme()" id="theme-btn">Modo claro</button>
+    <div style="display:flex; gap:10px;">
+        <a href="index.html" style="background: var(--bg-panel); color: var(--ink); border: 1px solid var(--line); padding: 8px 16px; border-radius: 999px; font-size: .8rem; font-weight: 600; text-decoration:none;">Abrir o LF-PRO</a>
+        <button onclick="toggleTheme()" id="theme-btn">Modo claro</button>
+    </div>
 </div>
 
 <div class="wrap">
@@ -172,7 +175,8 @@
             <tr><th>Indicador</th><th>O que significa</th><th>Requer</th></tr>
             <tr><td>Âncora</td><td>Dezenas que se repetiram entre os 2 últimos concursos</td><td>2+ concursos</td></tr>
             <tr><td>Núcleo de ciclo</td><td>Dezenas presentes nos 3 últimos concursos seguidos</td><td>3+ concursos</td></tr>
-            <tr><td>Ranking de força</td><td>Score de cada dezena (frequência ponderada + bônus de tríade mágica + bônus de âncora/núcleo)</td><td>1+ concurso</td></tr>
+            <tr><td>Retorno</td><td>Dezenas que saíram há 2 concursos, sumiram no último, e são candidatas a voltar — ganham um bônus extra no score</td><td>2+ concursos</td></tr>
+            <tr><td>Ranking de força</td><td>Score de cada dezena (frequência ponderada + bônus de tríade mágica + bônus de âncora/núcleo/retorno)</td><td>1+ concurso</td></tr>
         </table>
         <p>Se a âncora ou o núcleo aparecerem vazios ("insuficiente"), é porque ainda não há concursos suficientes — não é erro.</p>
     </section>
@@ -188,13 +192,17 @@
             <span class="lbl">Isto NÃO é uma aposta registrada</span>
             <p>Enquanto você não clicar em <b>"Registrar Jogos para Conferência Automática"</b>, esses 40 jogos são só uma prévia de trabalho. Se você colar um novo concurso agora, eles são recalculados e os antigos somem da tela — sem aviso, sem histórico dos que "quase escolheu".</p>
         </div>
+        <div class="box ok">
+            <span class="lbl">Novo: checkbox de marcação por jogo</span>
+            <p>Cada jogo tem uma caixinha de marcação, ligada por padrão. Ela serve só pra você sinalizar quais dos 40 vai realmente pagar/apostar — um resumo no topo da aba mostra quantos estão marcados e o custo estimado (marcados × R$ 3,50). <b>Desmarcar um jogo não tira ele da auditoria</b> — o sistema continua conferindo os 40 sempre, pra não perder a validação da heurística. É só um sinalizador visual do que você decidiu jogar de verdade.</p>
+        </div>
     </section>
 
     <section class="step">
         <div class="step-h"><span class="step-letter">E</span><h2>Registrar — agora sim, isto trava a aposta</h2><span class="tag">botão "Registrar Jogos"</span></div>
         <p>Ao clicar, o sistema:</p>
         <ul>
-            <li>Tira uma "fotografia" exata dos 40 jogos que estavam na tela naquele instante;</li>
+            <li>Tira uma "fotografia" exata dos 40 jogos que estavam na tela naquele instante — <b>incluindo quais estavam marcados</b> para aposta real naquele momento;</li>
             <li>Define o <b>concurso-alvo</b> automaticamente como <code>último concurso do histórico + 1</code> — ou seja, sempre o próximo concurso a sair;</li>
             <li>Salva essa fotografia como o <i>pleito</i> ativo, e mostra o alvo no card "Próximo Alvo" no topo do painel.</li>
         </ul>
@@ -225,11 +233,16 @@
         <ul>
             <li>Conta quantas dezenas de cada jogo saíram no resultado (11 a 15 pontos);</li>
             <li>Aplica a tabela de prêmios de referência (11, 12, 13, 14 e 15 pontos);</li>
-            <li>Soma o investimento (R$ 3,50 × 40 jogos = R$ 140,00) e o retorno total;</li>
-            <li>Atualiza o saldo financeiro acumulado, mostrado no topo da tela;</li>
-            <li>Gera um boletim completo na aba Auditoria, jogo por jogo, agrupado por estratégia (premium, excelente, bom, razoável);</li>
+            <li>Soma o investimento (R$ 3,50 × 40 jogos = R$ 140,00) e o retorno total — <b>sobre os 40 jogos, sempre, não importa quantos você marcou</b>;</li>
+            <li>Atualiza o saldo financeiro acumulado, mostrado no topo da tela — também sobre os 40 jogos;</li>
+            <li>Gera um boletim completo na aba Auditoria, jogo por jogo, agrupado por estratégia (premium, excelente, bom, razoável), com uma ★ ao lado de cada jogo marcado;</li>
+            <li>Acrescenta, dentro do mesmo boletim, um segundo sub-total só com os jogos marcados ("Investimento real") — pra você ver o que teria acontecido de fato com o dinheiro que decidiu gastar;</li>
             <li>Fecha o pleito (ele volta a ficar vazio) e já recalcula um novo prognóstico-prévia para o próximo concurso — que, de novo, só vira aposta oficial se você repetir o passo E.</li>
         </ul>
+        <div class="box ok">
+            <span class="lbl">Por que os dois números convivem no boletim</span>
+            <p>O "Líquido CC" (completo) é o que valida a heurística do sistema como um todo — por isso nunca diminui, mesmo que você jogue menos dezenas de bolso. O "Líquido (real)" é o que efetivamente aconteceu com o seu dinheiro, baseado só no que você marcou. Os dois ficam lado a lado, nenhum substitui o outro.</p>
+        </div>
         <div class="box danger">
             <span class="lbl">O que acontece se você NÃO segue essa ordem</span>
             <p>Se você pular o passo E (nunca clicou em Registrar) e colar o resultado do concurso seguinte, o sistema grava o resultado no histórico normalmente e recalcula um novo prognóstico — mas <b>nenhuma auditoria roda, nenhum boletim é gerado, e nada é descontado ou creditado no saldo</b>, porque não havia pleito algum esperando aquele ID. Não há erro nem aviso — o app simplesmente segue em frente como se você nunca tivesse jogado.</p>
