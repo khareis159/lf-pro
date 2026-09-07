@@ -437,7 +437,7 @@
             },
 
             constants: {
-                borda: [1,2,3,4,5,6,10,11,15,16,20,21,25],
+                borda: [1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25],
                 miolo: [7,8,9,12,13,14,17,18,19],
                 magicTriads: [[5,6,7],[12,13,14],[19,20,21]],
                 // Tabela de prêmios base (Lotofácil paga 11 a 15 pontos). Os valores de 14 e 15
@@ -843,7 +843,7 @@
                 document.getElementById('render-stats').innerHTML = `
                     <div class="stats-grid">
                         <div class="stat-item"><div class="stat-v">${a.pares}P / ${15 - a.pares}I</div><div class="stat-l">PARIDADE ATUAL</div></div>
-                        <div class="stat-item"><div class="stat-v">${a.borda}/13</div><div class="stat-l">BORDA DO VOLANTE</div></div>
+                        <div class="stat-item"><div class="stat-v">${a.borda}/16</div><div class="stat-l">BORDA DO VOLANTE</div></div>
                         <div class="stat-item"><div class="stat-v">${a.miolo}/9</div><div class="stat-l">MIOLO DO VOLANTE</div></div>
                         <div class="stat-item"><div class="stat-v">${a.magia}/9</div><div class="stat-l">TRÍADES MÁGICAS</div></div>
                     </div>
